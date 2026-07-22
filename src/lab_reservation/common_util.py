@@ -1,3 +1,6 @@
+BILLING_UNIT_MINUTES = 30
+EMERGENCY_SURCHARGE = 2000
+
 class CommonUtil:
     EQUIPMENT_LABELS = {
         "LASER_CUTTER": "レーザーカッター",
@@ -28,7 +31,13 @@ class CommonUtil:
         return value is None or value.strip() == ""
 
     @staticmethod
-    def calculate_fee(user_type, equipment_type, start_at, end_at, emergency):
+    def calculate_fee(
+        user_type,
+        equipment_type,
+        start_at,
+        end_at,
+        emergency,
+    ):
         if equipment_type not in CommonUtil.EQUIPMENT_HOURLY_RATES:
             raise ValueError(
                 f"unknown equipment type: {equipment_type}"
@@ -39,20 +48,28 @@ class CommonUtil:
                 f"unknown user type: {user_type}"
             )
 
-        hourly_rate = CommonUtil.EQUIPMENT_HOURLY_RATES[equipment_type]
+        hourly_rate = CommonUtil.EQUIPMENT_HOURLY_RATES[
+            equipment_type
+        ]
         multiplier = CommonUtil.USER_MULTIPLIERS[user_type]
 
-        minutes = int(
-            (end_at - start_at).total_seconds() // 60
+        total_seconds = (end_at - start_at).total_seconds()
+        billing_unit_seconds = BILLING_UNIT_MINUTES * 60
+
+        units = math.ceil(
+            total_seconds / billing_unit_seconds
         )
-        units = (minutes + 29) // 30
+
+        units_per_hour = 60 / BILLING_UNIT_MINUTES
 
         result = int(
-            hourly_rate * (units / 2.0) * multiplier
+            hourly_rate
+            * (units / units_per_hour)
+            * multiplier
         )
 
         if emergency:
-            result += 2000
+            result += EMERGENCY_SURCHARGE
 
         return result
 

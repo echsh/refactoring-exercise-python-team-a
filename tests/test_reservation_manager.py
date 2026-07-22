@@ -233,6 +233,38 @@ class ReservationManagerTest(unittest.TestCase):
         self.assertEqual(1, len(active))
         self.assertEqual(2, len(all_reservations))
 
+    def test_filtering_user_reservations_excludes_other_users_and_preserves_order(
+        self,
+    ):
+        first = self.manager.reserve(
+            student("s001", True),
+            equipment("laser-01", "LASER_CUTTER"),
+            at(2026, 7, 20, 10, 0),
+            at(2026, 7, 20, 11, 0),
+            False,
+            False,
+        )
+        self.manager.reserve(
+            student("s002", True),
+            equipment("gpu-01", "GPU_SERVER"),
+            at(2026, 7, 20, 11, 0),
+            at(2026, 7, 20, 12, 0),
+            False,
+            False,
+        )
+        second = self.manager.reserve(
+            student("s001", True),
+            equipment("laser-02", "LASER_CUTTER"),
+            at(2026, 7, 20, 13, 0),
+            at(2026, 7, 20, 14, 0),
+            False,
+            False,
+        )
+
+        result = self.manager.get_user_reservations("s001", True)
+
+        self.assertEqual([first, second], result)
+
     def test_summary_uses_domain_labels_and_can_include_fee(self):
         reservation = self.manager.reserve(
             student("s001", True),
