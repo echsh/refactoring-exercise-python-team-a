@@ -107,23 +107,26 @@ class ReservationManager:
                 if start_at < existing.end_at and end_at > existing.start_at:
                     raise RuntimeError("reservation overlaps existing reservation")
 
-        result = ReservationData()
-        result.reservation_id = f"R-{ReservationManager.no:04d}"
+        reservation_id = f"R-{ReservationManager.no:04d}"
         ReservationManager.no += 1
-        result.user_id = user.id
-        result.user_name = user.name
-        result.user_type = user.type
-        result.equipment_code = equipment.code
-        result.equipment_name = equipment.name
-        result.equipment_type = equipment.type
-        result.start_at = start_at
-        result.end_at = end_at
-        result.emergency = emergency
-        result.status = "RESERVED"
-        result.fee = CommonUtil.calculate_fee(
+        fee = CommonUtil.calculate_fee(
             user.type, equipment.type, start_at, end_at, emergency
         )
-        result.cancellation_fee = 0
+        result = ReservationData(
+            reservation_id=reservation_id,
+            user_id=user.id,
+            user_name=user.name,
+            user_type=user.type,
+            equipment_code=equipment.code,
+            equipment_name=equipment.name,
+            equipment_type=equipment.type,
+            start_at=start_at,
+            end_at=end_at,
+            emergency=emergency,
+            status="RESERVED",
+            fee=fee,
+            cancellation_fee=0,
+        )
         self.repository.save(result)
 
         if send_notification:
