@@ -265,6 +265,18 @@ class ReservationManagerTest(unittest.TestCase):
 
         self.assertEqual([first, second], result)
 
+    #秒単位の端数が30分単位の丸め前に失われないことを確認するテスト    
+    def test_seconds_fraction_is_not_lost_before_thirty_minute_rounding(self):
+        reservation = self.manager.reserve(
+            student("s001", True),
+            equipment("laser-01", "LASER_CUTTER"),
+            at(2026, 7, 20, 10, 0, 0),
+            at(2026, 7, 20, 10, 30, 10),
+            False,
+            False,
+        )
+        self.assertEqual(600, reservation.fee)
+
     def test_summary_uses_domain_labels_and_can_include_fee(self):
         reservation = self.manager.reserve(
             student("s001", True),
@@ -338,8 +350,8 @@ def equipment(code, equipment_type):
         active=True,
     )
 
-def at(year, month, day, hour, minute):
-    return datetime(year, month, day, hour, minute)
+def at(year, month, day, hour, minute, second=0):
+    return datetime(year, month, day, hour, minute, second)
 
 if __name__ == "__main__":
     unittest.main()
