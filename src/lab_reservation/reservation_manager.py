@@ -1,6 +1,19 @@
 from .common_util import CommonUtil
 from .models import ReservationData
 
+MAX_PENALTY_POINTS = 3
+OPENING_HOUR = 8
+CLOSING_HOUR = 22
+FREE_CANCELLATION_MINUTES_BEFORE_START = 24 * 60
+
+STUDENT_MAX_RESERVATION_MINUTES = 240
+STAFF_MAX_RESERVATION_MINUTES = 480
+EXTERNAL_MAX_RESERVATION_MINUTES = 120
+
+SATURDAY = 5
+SUNDAY = 6
+
+LATE_CANCELLATION_FEE_RATIO = 0.5
 
 class ReservationManager:
     no = 1
@@ -44,20 +57,20 @@ class ReservationManager:
 
         if user.suspended:
             raise RuntimeError("user is suspended")
-        if user.penalty_points >= 3:
+        if user.penalty_points >= MAX_PENALTY_POINTS:
             raise RuntimeError("too many penalty points")
         if not equipment.active:
             raise RuntimeError("equipment is inactive")
 
         minutes = int((end_at - start_at).total_seconds() // 60)
         if user.type == "STUDENT":
-            if minutes > 240:
+            if minutes > STUDENT_MAX_RESERVATION_MINUTES:
                 raise ValueError("student reservation is too long")
         elif user.type == "STAFF":
-            if minutes > 480:
+            if minutes > STAFF_MAX_RESERVATION_MINUTES:
                 raise ValueError("staff reservation is too long")
         elif user.type == "EXTERNAL":
-            if minutes > 120:
+            if minutes > EXTERNAL_MAX_RESERVATION_MINUTES:
                 raise ValueError("external reservation is too long")
         else:
             raise ValueError(f"unknown user type: {user.type}")
@@ -67,14 +80,14 @@ class ReservationManager:
                 raise ValueError("only staff can make emergency reservations")
         else:
             if (
-                start_at.hour < 8
-                or end_at.hour > 22
-                or (end_at.hour == 22 and end_at.minute > 0)
+                start_at.hour < OPENING_HOUR
+                or end_at.hour > CLOSING_HOUR
+                or (end_at.hour == CLOSING_HOUR and end_at.minute > 0)
             ):
                 raise ValueError("outside operating hours")
 
         if user.type == "EXTERNAL":
-            if start_at.weekday() in (5, 6):
+            if start_at.weekday() in (SATURDAY, SUNDAY):
                 raise ValueError("external users cannot reserve on weekends")
 
         if equipment.type == "MOTION_CAPTURE":
@@ -139,10 +152,10 @@ class ReservationManager:
         minutes_before_start = int(
             (reservation.start_at - cancelled_at).total_seconds() // 60
         )
-        if minutes_before_start >= 24 * 60:
+        if minutes_before_start >= FREE_CANCELLATION_MINUTES_BEFORE_START:
             cancellation_fee = 0
         elif minutes_before_start > 0:
-            cancellation_fee = reservation.fee // 2
+            cancellation_fee = int(reservation.fee * LATE_CANCELLATION_FEE_RATIO)
         else:
             cancellation_fee = reservation.fee
 
