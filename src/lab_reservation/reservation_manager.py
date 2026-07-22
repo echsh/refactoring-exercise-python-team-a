@@ -36,6 +36,13 @@ class ReservationManager:
         if equipment is None:
             raise ValueError("equipment is required")
 
+        if start_at is None or end_at is None:
+            raise ValueError("start and end are required")
+        if end_at <= start_at:
+            raise ValueError("end must be after start")
+        if start_at.date() != end_at.date():
+            raise ValueError("reservation must be within one day")
+
         if user.suspended:
             raise RuntimeError("user is suspended")
         if user.penalty_points >= MAX_PENALTY_POINTS:
