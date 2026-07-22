@@ -178,12 +178,14 @@ class ReservationManager:
     def get_user_reservations(self, user_id, include_cancelled):
         result = []
         for reservation in self.repository.find_all():
-            if reservation.user_id == user_id:
-                if include_cancelled:
-                    result.append(reservation)
-                else:
-                    if reservation.status != "CANCELLED":
-                        result.append(reservation)
+            if reservation.user_id != user_id:
+                continue
+            
+            if not include_cancelled and reservation.status == "CANCELLED":
+                continue
+
+            result.append(reservation)
+            
         return result
 
     def make_summary(self, reservation, include_fee):
