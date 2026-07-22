@@ -257,7 +257,7 @@ class ReservationManagerTest(unittest.TestCase):
             False,
             False,
         )
-          
+
         self.assertEqual(
             "R-0001 モーションキャプチャ 教職員 "
             "2026-07-20T10:00 - 2026-07-20T11:00",
