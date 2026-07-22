@@ -16,8 +16,9 @@ class CommonUtil:
 
     @staticmethod
     def calculate_fee(user_type, equipment_type, start_at, end_at, emergency):
-        minutes = int((end_at - start_at).total_seconds() // 60)
-        units = (minutes + BILLING_UNIT_MINUTES - 1) // BILLING_UNIT_MINUTES
+        total_seconds = int((end_at - start_at).total_seconds())
+        unit_seconds = BILLING_UNIT_MINUTES * 60
+        units = (total_seconds + unit_seconds - 1) // unit_seconds
 
         if equipment_type == "LASER_CUTTER":
             hourly_rate = LASER_CUTTER_HOURLY_RATE

@@ -27,6 +27,21 @@ class ReservationManagerTest(unittest.TestCase):
         self.assertEqual("R-0001", reservation.reservation_id)
         self.assertEqual(900, reservation.fee)
         self.assertEqual("RESERVED", reservation.status)
+        
+    def test_seconds_fraction_is_not_lost_before_thirty_minute_rounding(self):
+    # 30分10秒の利用は、10秒を切り捨てて30分として扱うのではなく，
+    # 30分単位で切り上げて60分(2単位)として課金されるべき．
+        reservation = self.manager.reserve(
+        student("s001", True),
+        equipment("laser-01", "LASER_CUTTER"),
+        at(2026, 7, 20, 10, 0, 0),
+        at(2026, 7, 20, 10, 30, 10),
+        False,
+        False,
+    )
+
+    # レーザーカッター1200円/h × 学生倍率0.5 × 1時間(2単位) = 600円
+        self.assertEqual(600, reservation.fee)
 
     def test_external_gpu_fee_uses_external_multiplier(self):
         reservation = self.manager.reserve(
@@ -306,8 +321,8 @@ def equipment(code, equipment_type):
         active=True,
     )
 
-def at(year, month, day, hour, minute):
-    return datetime(year, month, day, hour, minute)
+def at(year, month, day, hour, minute, second=0):
+    return datetime(year, month, day, hour, minute, second)
 
 if __name__ == "__main__":
     unittest.main()
