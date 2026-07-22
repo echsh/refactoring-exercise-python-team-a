@@ -35,25 +35,6 @@ class ReservationManager:
             raise ValueError("user is required")
         if equipment is None:
             raise ValueError("equipment is required")
-        if (
-            CommonUtil.empty(user.id)
-            or CommonUtil.empty(user.name)
-            or CommonUtil.empty(user.type)
-        ):
-            raise ValueError("invalid user")
-        if (
-            CommonUtil.empty(equipment.code)
-            or CommonUtil.empty(equipment.name)
-            or CommonUtil.empty(equipment.type)
-        ):
-            raise ValueError("invalid equipment")
-
-        if start_at is None or end_at is None:
-            raise ValueError("start and end are required")
-        if end_at <= start_at:
-            raise ValueError("end must be after start")
-        if start_at.date() != end_at.date():
-            raise ValueError("reservation must be within one day")
 
         if user.suspended:
             raise RuntimeError("user is suspended")
@@ -72,8 +53,6 @@ class ReservationManager:
         elif user.type == "EXTERNAL":
             if minutes > EXTERNAL_MAX_RESERVATION_MINUTES:
                 raise ValueError("external reservation is too long")
-        else:
-            raise ValueError(f"unknown user type: {user.type}")
 
         if emergency:
             if user.type != "STAFF":
@@ -95,8 +74,6 @@ class ReservationManager:
                 raise ValueError("training is required")
             if user.type == "EXTERNAL":
                 raise ValueError("external users cannot use motion capture")
-        elif equipment.type != "LASER_CUTTER" and equipment.type != "GPU_SERVER":
-            raise ValueError(f"unknown equipment type: {equipment.type}")
 
         all_reservations = self.repository.find_all()
         for existing in all_reservations:
