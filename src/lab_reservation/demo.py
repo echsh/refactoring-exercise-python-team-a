@@ -11,17 +11,19 @@ def main():
     notification = RecordingNotificationService()
     manager = ReservationManager(repository, notification)
 
-    student = UserData()
-    student.id = "u001"
-    student.name = "山田花子"
-    student.type = "STUDENT"
-    student.training_completed = True
+    student = UserData(
+        id="u001",
+        name="山田花子",
+        type="STUDENT",
+        training_completed=True,
+    )
 
-    gpu = EquipmentData()
-    gpu.code = "gpu-01"
-    gpu.name = "GPU Server 01"
-    gpu.type = "GPU_SERVER"
-    gpu.active = True
+    gpu = EquipmentData(
+        code="gpu-01",
+        name="GPU Server 01",
+        type="GPU_SERVER",
+        active=True,
+    )
 
     reservation = manager.reserve(
         student,

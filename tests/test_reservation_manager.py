@@ -264,51 +264,50 @@ class ReservationManagerTest(unittest.TestCase):
             self.manager.make_summary(reservation, False),
         )
 
+
 def student(user_id, training_completed):
-    user = UserData()
-    user.id = user_id
-    user.name = "学生" + user_id
-    user.type = "STUDENT"
-    user.training_completed = training_completed
-    user.suspended = False
-    user.penalty_points = 0
-    return user
+    return UserData(
+        id=user_id,
+        name="学生" + user_id,
+        type="STUDENT",
+        training_completed=training_completed,
+        suspended=False,
+        penalty_points=0,
+    )
 
 
 def staff(user_id, training_completed):
-    user = UserData()
-    user.id = user_id
-    user.name = "教職員" + user_id
-    user.type = "STAFF"
-    user.training_completed = training_completed
-    user.suspended = False
-    user.penalty_points = 0
-    return user
+    return UserData(
+        id=user_id,
+        name="教職員" + user_id,
+        type="STAFF",
+        training_completed=training_completed,
+        suspended=False,
+        penalty_points=0,
+    )
 
 
 def external(user_id):
-    user = UserData()
-    user.id = user_id
-    user.name = "学外" + user_id
-    user.type = "EXTERNAL"
-    user.training_completed = True
-    user.suspended = False
-    user.penalty_points = 0
-    return user
+    return UserData(
+        id=user_id,
+        name="学外" + user_id,
+        type="EXTERNAL",
+        training_completed=True,
+        suspended=False,
+        penalty_points=0,
+    )
 
 
 def equipment(code, equipment_type):
-    item = EquipmentData()
-    item.code = code
-    item.name = code
-    item.type = equipment_type
-    item.active = True
-    return item
-
+    return EquipmentData(
+        code=code,
+        name=code,
+        type=equipment_type,
+        active=True,
+    )
 
 def at(year, month, day, hour, minute):
     return datetime(year, month, day, hour, minute)
-
 
 if __name__ == "__main__":
     unittest.main()

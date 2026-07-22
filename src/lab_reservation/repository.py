@@ -24,4 +24,5 @@ class InMemoryReservationRepository(ReservationRepository):
         return None
 
     def find_all(self):
-        return self.data
+        cp_list = list(self.data)
+        return cp_list
