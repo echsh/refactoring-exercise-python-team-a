@@ -20,23 +20,20 @@ class ReservationManager:
     ):
         if user is None:
             raise ValueError("user is required")
-        else:
-            if equipment is None:
-                raise ValueError("equipment is required")
-            else:
-                if (
-                    CommonUtil.empty(user.id)
-                    or CommonUtil.empty(user.name)
-                    or CommonUtil.empty(user.type)
-                ):
-                    raise ValueError("invalid user")
-                else:
-                    if (
-                        CommonUtil.empty(equipment.code)
-                        or CommonUtil.empty(equipment.name)
-                        or CommonUtil.empty(equipment.type)
-                    ):
-                        raise ValueError("invalid equipment")
+        if equipment is None:
+            raise ValueError("equipment is required")
+        if (
+            CommonUtil.empty(user.id)
+            or CommonUtil.empty(user.name)
+            or CommonUtil.empty(user.type)
+        ):
+            raise ValueError("invalid user")
+        if (
+            CommonUtil.empty(equipment.code)
+            or CommonUtil.empty(equipment.name)
+            or CommonUtil.empty(equipment.type)
+        ):
+            raise ValueError("invalid equipment")
 
         if start_at is None or end_at is None:
             raise ValueError("start and end are required")
