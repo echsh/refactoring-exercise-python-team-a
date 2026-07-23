@@ -2,6 +2,7 @@ import unittest
 
 from lab_reservation.models import ReservationData
 from lab_reservation.repository import InMemoryReservationRepository
+from datetime import datetime
 
 
 class InMemoryReservationRepositoryTest(unittest.TestCase):
@@ -42,9 +43,17 @@ class InMemoryReservationRepositoryTest(unittest.TestCase):
 
 
 def reservation(reservation_id):
-    result = ReservationData()
-    result.reservation_id = reservation_id
-    return result
+    return ReservationData(
+        reservation_id=reservation_id,
+        user_id="s001",
+        user_name="テストユーザー",
+        user_type="STUDENT",
+        equipment_code="gpu-01",
+        equipment_name="GPUサーバ",
+        equipment_type="GPU_SERVER",
+        start_at=datetime(2026, 7, 20, 10, 0),
+        end_at=datetime(2026, 7, 20, 11, 0),
+    )
 
 
 if __name__ == "__main__":
