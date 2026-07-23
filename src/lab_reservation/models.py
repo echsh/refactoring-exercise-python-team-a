@@ -55,70 +55,17 @@ class EquipmentData:
 
 
 class ReservationData:
-    VALID_USER_TYPES = UserData.VALID_TYPES
-    VALID_EQUIPMENT_TYPES = EquipmentData.VALID_TYPES
-
-    def __init__(
-        self,
-        reservation_id,
-        user_id,
-        user_name,
-        user_type,
-        equipment_code,
-        equipment_name,
-        equipment_type,
-        start_at,
-        end_at,
-        emergency=False,
-        status="RESERVED",
-        fee=0,
-        cancellation_fee=0,
-    ):
-        if (
-            user_id is None
-            or user_id.strip() == ""
-            or user_name is None
-            or user_name.strip() == ""
-            or user_type is None
-            or user_type.strip() == ""
-        ):
-            raise ValueError("invalid user")
-
-        if user_type not in self.VALID_USER_TYPES:
-            raise ValueError(f"unknown user type: {user_type}")
-
-        if (
-            equipment_code is None
-            or equipment_code.strip() == ""
-            or equipment_name is None
-            or equipment_name.strip() == ""
-            or equipment_type is None
-            or equipment_type.strip() == ""
-        ):
-            raise ValueError("invalid equipment")
-
-        if equipment_type not in self.VALID_EQUIPMENT_TYPES:
-            raise ValueError(f"unknown equipment type: {equipment_type}")
-
-        if start_at is None or end_at is None:
-            raise ValueError("start and end are required")
-
-        if end_at <= start_at:
-            raise ValueError("end must be after start")
-
-        if start_at.date() != end_at.date():
-            raise ValueError("reservation must be within one day")
-
-        self.reservation_id = reservation_id
-        self.user_id = user_id
-        self.user_name = user_name
-        self.user_type = user_type
-        self.equipment_code = equipment_code
-        self.equipment_name = equipment_name
-        self.equipment_type = equipment_type
-        self.start_at = start_at
-        self.end_at = end_at
-        self.emergency = emergency
-        self.status = status
-        self.fee = fee
-        self.cancellation_fee = cancellation_fee
+    def __init__(self):
+        self.reservation_id = None
+        self.user_id = None
+        self.user_name = None
+        self.user_type = None
+        self.equipment_code = None
+        self.equipment_name = None
+        self.equipment_type = None
+        self.start_at = None
+        self.end_at = None
+        self.emergency = False
+        self.status = None
+        self.fee = 0
+        self.cancellation_fee = 0
