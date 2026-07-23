@@ -35,18 +35,6 @@ class ReservationManager:
             raise ValueError("user is required")
         if equipment is None:
             raise ValueError("equipment is required")
-        if (
-            CommonUtil.empty(user.id)
-            or CommonUtil.empty(user.name)
-            or CommonUtil.empty(user.type)
-        ):
-            raise ValueError("invalid user")
-        if (
-            CommonUtil.empty(equipment.code)
-            or CommonUtil.empty(equipment.name)
-            or CommonUtil.empty(equipment.type)
-        ):
-            raise ValueError("invalid equipment")
 
         if start_at is None or end_at is None:
             raise ValueError("start and end are required")
@@ -72,8 +60,6 @@ class ReservationManager:
         elif user.type == "EXTERNAL":
             if minutes > EXTERNAL_MAX_RESERVATION_MINUTES:
                 raise ValueError("external reservation is too long")
-        else:
-            raise ValueError(f"unknown user type: {user.type}")
 
         if emergency:
             if user.type != "STAFF":
@@ -95,8 +81,6 @@ class ReservationManager:
                 raise ValueError("training is required")
             if user.type == "EXTERNAL":
                 raise ValueError("external users cannot use motion capture")
-        elif equipment.type != "LASER_CUTTER" and equipment.type != "GPU_SERVER":
-            raise ValueError(f"unknown equipment type: {equipment.type}")
 
         all_reservations = self.repository.find_all()
         for existing in all_reservations:
@@ -107,23 +91,26 @@ class ReservationManager:
                 if start_at < existing.end_at and end_at > existing.start_at:
                     raise RuntimeError("reservation overlaps existing reservation")
 
-        result = ReservationData()
-        result.reservation_id = f"R-{ReservationManager.no:04d}"
+        reservation_id = f"R-{ReservationManager.no:04d}"
         ReservationManager.no += 1
-        result.user_id = user.id
-        result.user_name = user.name
-        result.user_type = user.type
-        result.equipment_code = equipment.code
-        result.equipment_name = equipment.name
-        result.equipment_type = equipment.type
-        result.start_at = start_at
-        result.end_at = end_at
-        result.emergency = emergency
-        result.status = "RESERVED"
-        result.fee = CommonUtil.calculate_fee(
+        fee = CommonUtil.calculate_fee(
             user.type, equipment.type, start_at, end_at, emergency
         )
-        result.cancellation_fee = 0
+        result = ReservationData(
+            reservation_id=reservation_id,
+            user_id=user.id,
+            user_name=user.name,
+            user_type=user.type,
+            equipment_code=equipment.code,
+            equipment_name=equipment.name,
+            equipment_type=equipment.type,
+            start_at=start_at,
+            end_at=end_at,
+            emergency=emergency,
+            status="RESERVED",
+            fee=fee,
+            cancellation_fee=0,
+        )
         self.repository.save(result)
 
         if send_notification:
