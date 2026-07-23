@@ -11,18 +11,13 @@ class ReservationRepository:
 
 class InMemoryReservationRepository(ReservationRepository):
     def __init__(self):
-        self.data = []
+        self.data = {}
 
     def save(self, reservation):
-        if reservation not in self.data:
-            self.data.append(reservation)
+        self.data[reservation.reservation_id] = reservation
 
     def find_by_id(self, reservation_id):
-        for reservation in self.data:
-            if reservation.reservation_id == reservation_id:
-                return reservation
-        return None
+        return self.data.get(reservation_id)
 
     def find_all(self):
-        cp_list = list(self.data)
-        return cp_list
+        return list(self.data.values())
